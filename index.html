@@ -10928,7 +10928,7 @@ function setHeroPic(k){const u=UI_ART.heroes[artKey(k)];const el=$('#heroPic');i
 /* ---- Wolf-Modell (wolf.glb) mit eingebauter Laufanimation ---- */
 // Einstellungen: url = Pfad zur Datei, length = Länge inkl. Schwanz auf der Karte,
 // rotY = Drehung in Radiant, falls der Wolf seitwärts/rückwärts läuft (null = automatisch), speedRef = Tempo, bei dem die Animation 1:1 läuft
-const WOLF_CFG={url:'Assets/models/wolf.glb',length:2.0,rotY:null,speedRef:3.2,clip:null};
+const WOLF_CFG={url:'models/wolf.glb',length:2.0,rotY:null,speedRef:3.2,clip:null};
 let WOLF_GLB=null;
 function skinBox(o){o.updateMatrixWorld(true);const bb=new THREE.Box3(),v=new V3();let sk=false;
   o.traverse(n=>{if(!n.isMesh)return;const p=n.geometry.attributes.position;const st=Math.max(1,Math.floor(p.count/800));for(let i=0;i<p.count;i+=st){v.fromBufferAttribute(p,i);if(n.isSkinnedMesh){n.boneTransform(i,v);sk=true;}v.applyMatrix4(n.matrixWorld);bb.expandByPoint(v);}});
@@ -11509,19 +11509,19 @@ function palaRetarget(clip,root){// Positions-/Skalierungsspuren entfernen (Einh
     if(!names.has(bone)){const alt=[...names].find(n=>fix(n)===fix(bone)||n.endsWith(bone.replace(/^mixamorig/,'')));if(!alt)return false;bone=alt;}t.name=bone+'.'+prop;return true;});
   return clip;}
 ASSETS.paladin={
-  model:['./assets/models/paladin_wow.glb','models/paladin_wow.glb'],
-  run:['./assets/models/Running withskin.fbx','models/Running withskin.fbx','./assets/models/Running_withskin.fbx'],
-  idle:['./assets/models/Standing Idle withskin.fbx','models/Standing Idle withskin.fbx','./assets/models/Standing_Idle_withskin.fbx'],
-  weapon:['./assets/models/Schwert_paladin_weapon.glb','models/Schwert_paladin_weapon.glb'],
-  retriAttacks:[['./assets/models/Great Sword High Spin Attack.fbx','models/Great Sword High Spin Attack.fbx'],
-                ['./assets/models/Standing Melee Combo Attack.fbx','models/Standing Melee Combo Attack.fbx'],
-                ['./assets/models/Standing Melee Attack Horizontal.fbx','models/Standing Melee Attack Horizontal.fbx']],
-  holyCast:['./assets/models/Magic Heal.fbx','models/Magic Heal.fbx']};
-ASSETS.icons.pala_retri=[['icon/Paladin_retri.png','icon/paladin_retri.png','icon/Paladin_retri.PNG','./assets/icons/paladin_retri.png'],null,null];
-ASSETS.icons.pala_holy=[['icon/Paladin_holy.JPG','icon/Paladin_holy.jpg','icon/paladin_holy.jpg','icon/paladin_holy.png','./assets/icons/paladin_holy.png'],null,null];
+  model:['models/paladin_wow.glb'],
+  run:['models/Running withskin.fbx','models/Running_withskin.fbx'],
+  idle:['models/Standing Idle withskin.fbx','models/Standing_Idle_withskin.fbx'],
+  weapon:['models/Schwert_paladin_weapon.glb'],
+  retriAttacks:[['models/Great Sword High Spin Attack.fbx'],
+                ['models/Standing Melee Combo Attack.fbx'],
+                ['models/Standing Melee Attack Horizontal.fbx']],
+  holyCast:['models/Magic Heal.fbx']};
+ASSETS.icons.pala_retri=[['icon/Paladin_retri.png','icon/paladin_retri.png','icon/Paladin_retri.PNG'],null,null];
+ASSETS.icons.pala_holy=[['icon/Paladin_holy.JPG','icon/Paladin_holy.jpg','icon/paladin_holy.jpg','icon/paladin_holy.png'],null,null];
 // Paladin-Texturen (Assets/textures). Leere Liste = Textur aus der GLB verwenden.
-ASSETS.paladin.tex={base:['textures/paladin_base.png','./assets/textures/paladin_base.png'],normal:['textures/paladin_normal.png','./assets/textures/paladin_normal.png'],
-  metallic:['textures/paladin_metallic.png','./assets/textures/paladin_metallic.png'],roughness:['textures/paladin_roughness.png','./assets/textures/paladin_roughness.png']};
+ASSETS.paladin.tex={base:['textures/paladin_base.png'],normal:['textures/paladin_normal.png'],
+  metallic:['textures/paladin_metallic.png'],roughness:['textures/paladin_roughness.png']};
 ASSET_SRC.paladin=async()=>{const A=ASSETS.paladin;
   const [run,idle]=await Promise.all([loadFBXAsset(A.run),loadFBXAsset(A.idle)]);
   const opt=l=>loadFBXAsset(l).catch(e=>{console.warn('Paladin-Animation fehlt',l[0]);return null;});
