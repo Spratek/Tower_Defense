@@ -579,6 +579,7 @@ img.hart[data-h="elf"]{border-color:#e0405a!important;box-shadow:0 0 0 2px #2a06
 .hpick.on img.hart[data-h="elf"]{border-color:#ffd23f!important}
 .hdPort.photo[data-h="elf"]{background:radial-gradient(circle at 50% 40%,#a8203a,#2a0614)!important;box-shadow:inset 0 0 0 2px #e0405a,0 0 16px rgba(224,64,90,.5)!important}
 img.hart[data-h="kael"]{border-color:#c46aff!important}
+#bakOv{z-index:90!important}
 #bakOv .card{max-width:440px}
 .bakSec{background:rgba(255,255,255,.1);border-radius:12px;padding:8px 10px 10px;margin-top:10px;text-align:left}
 .bakLab{font-size:16px;color:#fff;margin-bottom:6px}
@@ -785,7 +786,7 @@ img.hart[data-h="kael"]{border-color:#c46aff!important}
     <div class="bakRow"><button class="big gold f" id="bakLoad">⬆️ Code laden</button><button class="big alt f" id="bakPick">📂 Datei wählen</button></div>
     <input type="file" id="bakFileIn" accept=".txt,.json,text/plain,application/json" style="display:none"></div>
   <div class="cloudTxt" id="bakTxt"></div>
-  <button class="big alt f" data-back>Zurück</button></div></div>
+  <button class="big alt f" id="bakBack">Zurück</button></div></div>
 <div class="ov" id="loginOv"><div class="card">
   <div class="logo f" style="font-size:36px">Täglicher Bonus</div><div class="lvname f" id="loginSub"></div>
   <div class="logRow" id="loginRow"></div><div id="loginLoot"></div>
@@ -12663,7 +12664,9 @@ function bakImport(code){const o=bakParse(code);if(!o){$('#bakTxt').textContent=
   catch(e){$('#bakTxt').textContent='❌ Speichern nicht möglich (privater Modus?).';return;}
   try{if(typeof cloudWrite==='function')cloudWrite();}catch(e){}
   $('#bakTxt').textContent='✅ Spielstand geladen – das Spiel startet neu …';setTimeout(()=>location.reload(),900);}
-function openBak(from){$('#bakOut').value=bakExport();$('#bakIn').value='';$('#bakTxt').textContent='';openOv('bakOv',from);sfx('click');}
+function openBak(){$('#bakOut').value=bakExport();$('#bakIn').value='';$('#bakTxt').textContent='';$('#bakOv').classList.add('show');sfx('click');}
+function closeBak(){$('#bakOv').classList.remove('show');sfx('click');}
+$('#bakBack').addEventListener('click',closeBak);
 function bakCopyTxt(t){if(navigator.clipboard&&window.isSecureContext)return navigator.clipboard.writeText(t);
   return new Promise((res,rej)=>{const ta=$('#bakOut');ta.removeAttribute('readonly');ta.select();ta.setSelectionRange(0,t.length);const ok=document.execCommand('copy');ta.setAttribute('readonly','');ok?res():rej();});}
 $('#bakBtn1').addEventListener('click',()=>openBak('startOv'));$('#bakBtn2').addEventListener('click',()=>openBak('pauseOv'));
@@ -12803,7 +12806,7 @@ function initUI2(){
   // Rote X-Buttons oben rechts
   const addX=(card,fn)=>{if(!card||card.querySelector(':scope>.xbtn'))return;const x=document.createElement('button');x.className='xbtn';x.setAttribute('aria-label','Schließen');x.textContent='✕';x.addEventListener('click',e=>{e.stopPropagation();fn();});card.appendChild(x);};
   document.querySelectorAll('.ov').forEach(ov=>{const card=ov.querySelector('.card');if(!card)return;const back=card.querySelector('[data-back]');
-    if(back)addX(card,()=>back.click());else if(ov.id==='talOv')addX(card,()=>$('#talBack').click());else if(ov.id==='pauseOv')addX(card,()=>$('#resumeBtn').click());else if(ov.id==='optOv')addX(card,()=>{sfx('click');closeOpt();});});
+    if(back)addX(card,()=>back.click());else if(ov.id==='talOv')addX(card,()=>$('#talBack').click());else if(ov.id==='pauseOv')addX(card,()=>$('#resumeBtn').click());else if(ov.id==='optOv')addX(card,()=>{sfx('click');closeOpt();});else if(ov.id==='bakOv')addX(card,closeBak);});
   const mo=new MutationObserver(syncNav);document.querySelectorAll('.ov').forEach(o=>mo.observe(o,{attributes:true,attributeFilter:['class']}));
   setInterval(()=>{if(document.body.classList.contains('navOn'))updNav();},1500);syncNav();}
 /* =================== HANDBUCH / LEXIKON =================== */
