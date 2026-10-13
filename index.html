@@ -579,6 +579,13 @@ img.hart[data-h="elf"]{border-color:#e0405a!important;box-shadow:0 0 0 2px #2a06
 .hpick.on img.hart[data-h="elf"]{border-color:#ffd23f!important}
 .hdPort.photo[data-h="elf"]{background:radial-gradient(circle at 50% 40%,#a8203a,#2a0614)!important;box-shadow:inset 0 0 0 2px #e0405a,0 0 16px rgba(224,64,90,.5)!important}
 img.hart[data-h="kael"]{border-color:#c46aff!important}
+#bakOv .card{max-width:440px}
+.bakSec{background:rgba(255,255,255,.1);border-radius:12px;padding:8px 10px 10px;margin-top:10px;text-align:left}
+.bakLab{font-size:16px;color:#fff;margin-bottom:6px}
+#bakOv textarea{width:100%;box-sizing:border-box;height:64px;border-radius:10px;border:2px solid rgba(0,0,0,.35);background:#0e1a3e;color:#cfe0ff;font:600 11px/1.3 ui-monospace,Menlo,monospace;padding:6px;resize:none;word-break:break-all;-webkit-user-select:text;user-select:text}
+#bakOv #bakIn{background:#fff;color:#123}
+.bakRow{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:6px}
+.bakRow .big{font-size:15px!important;padding:8px 4px!important;margin-top:0!important;grid-column:auto!important}
 </style>
 </head>
 <body>
@@ -696,6 +703,7 @@ img.hart[data-h="kael"]{border-color:#c46aff!important}
     </div>
     <div class="setRow f"><span class="lab">⚙️ Grafik</span><button data-gfx="high">Hoch</button><button data-gfx="low">Niedrig (ältere Handys)</button>
       <span class="lab">🌐 Sprache</span><button data-lang="de">🇩🇪 Deutsch</button><button data-lang="en">🇬🇧 English (Beta)</button></div>
+    <button class="big alt f" id="bakBtn1">💾 Spielstand sichern / laden</button>
     <div class="best f" id="bestTxt"></div>
     <div class="cloudTxt" id="cloudTxt"></div>
     <div class="cloudTxt" style="opacity:.7;font-size:11px">Wolf-3D-Modell „Hell Wolf“ von Fubbi (Sketchfab) · CC BY 4.0<br>Schleim-3D-Modell „Slimer – Walk“ von Rostenbach (Sketchfab) · CC BY 4.0<br>Axt-3D-Modell „Empire Axe Volcanic“ von Elite Big Speakerman (Sketchfab) · CC BY 4.0<br>Drachen-3D-Modell „Demon Dragon Full Texture“ von endlessvoidmc (Sketchfab) · CC BY 4.0</div>
@@ -713,6 +721,7 @@ img.hart[data-h="kael"]{border-color:#c46aff!important}
     <button class="big alt f" id="dmgBtn">🔢 Schadenszahlen: An</button>
     <button class="big alt f" id="musicBtn">🎵 Musik: An</button>
     <button class="big alt f" id="autoBtn">⏩ Auto-Wellen: Aus</button>
+    <button class="big alt f" id="bakBtn2">💾 Spielstand sichern / laden</button>
     <div class="mgrid f" data-from="pauseOv">
       <button class="mbtn" data-mb="wheel"><span class="i">🎡</span><span class="l">Glücksrad</span><span class="dot dW"></span></button>
       <button class="mbtn" data-mb="daily"><span class="i">📅</span><span class="l">Tages&shy;aufgabe</span><span class="dot dD"></span></button>
@@ -765,6 +774,18 @@ img.hart[data-h="kael"]{border-color:#c46aff!important}
   <div class="shopTop"><span class="lvname f" style="margin:0">Schatzgold verdienst du in jeder Schlacht</span><span class="coins f" id="shopCoins">0 🪙</span></div>
   <div class="stabs f" id="shopTabs"><button data-t="items" class="on">🧪 Tränke</button><button data-t="towers">🏰 Türme</button><button data-t="heroes">🦸 Helden</button><button data-t="gear">🗡️ Ausrüstung</button><button data-t="chests">🎁 Truhen</button></div>
   <div id="shopList"></div><button class="big alt f" data-back>Zurück</button></div></div>
+<div class="ov" id="bakOv"><div class="card">
+  <div class="logo f" style="font-size:34px">Spielstand sichern</div>
+  <div class="lvname f">Dein Fortschritt als Code – zum Sichern oder für ein anderes Gerät</div>
+  <div class="bakSec"><div class="bakLab f">📤 Exportieren</div>
+    <textarea id="bakOut" readonly spellcheck="false"></textarea>
+    <div class="bakRow"><button class="big f" id="bakCopy">📋 Code kopieren</button><button class="big alt f" id="bakFile">📄 Als Datei speichern</button></div></div>
+  <div class="bakSec"><div class="bakLab f">📥 Importieren</div>
+    <textarea id="bakIn" spellcheck="false" placeholder="Code hier einfügen …"></textarea>
+    <div class="bakRow"><button class="big gold f" id="bakLoad">⬆️ Code laden</button><button class="big alt f" id="bakPick">📂 Datei wählen</button></div>
+    <input type="file" id="bakFileIn" accept=".txt,.json,text/plain,application/json" style="display:none"></div>
+  <div class="cloudTxt" id="bakTxt"></div>
+  <button class="big alt f" data-back>Zurück</button></div></div>
 <div class="ov" id="loginOv"><div class="card">
   <div class="logo f" style="font-size:36px">Täglicher Bonus</div><div class="lvname f" id="loginSub"></div>
   <div class="logRow" id="loginRow"></div><div id="loginLoot"></div>
@@ -10928,7 +10949,7 @@ function setHeroPic(k){const u=UI_ART.heroes[artKey(k)];const el=$('#heroPic');i
 /* ---- Wolf-Modell (wolf.glb) mit eingebauter Laufanimation ---- */
 // Einstellungen: url = Pfad zur Datei, length = Länge inkl. Schwanz auf der Karte,
 // rotY = Drehung in Radiant, falls der Wolf seitwärts/rückwärts läuft (null = automatisch), speedRef = Tempo, bei dem die Animation 1:1 läuft
-const WOLF_CFG={url:'models/wolf.glb',length:2.0,rotY:null,speedRef:3.2,clip:null};
+const WOLF_CFG={url:'Assets/models/wolf.glb',length:2.0,rotY:null,speedRef:3.2,clip:null};
 let WOLF_GLB=null;
 function skinBox(o){o.updateMatrixWorld(true);const bb=new THREE.Box3(),v=new V3();let sk=false;
   o.traverse(n=>{if(!n.isMesh)return;const p=n.geometry.attributes.position;const st=Math.max(1,Math.floor(p.count/800));for(let i=0;i<p.count;i+=st){v.fromBufferAttribute(p,i);if(n.isSkinnedMesh){n.boneTransform(i,v);sk=true;}v.applyMatrix4(n.matrixWorld);bb.expandByPoint(v);}});
@@ -11509,19 +11530,19 @@ function palaRetarget(clip,root){// Positions-/Skalierungsspuren entfernen (Einh
     if(!names.has(bone)){const alt=[...names].find(n=>fix(n)===fix(bone)||n.endsWith(bone.replace(/^mixamorig/,'')));if(!alt)return false;bone=alt;}t.name=bone+'.'+prop;return true;});
   return clip;}
 ASSETS.paladin={
-  model:['models/paladin_wow.glb'],
-  run:['models/Running withskin.fbx','models/Running_withskin.fbx'],
-  idle:['models/Standing Idle withskin.fbx','models/Standing_Idle_withskin.fbx'],
-  weapon:['models/Schwert_paladin_weapon.glb'],
-  retriAttacks:[['models/Great Sword High Spin Attack.fbx'],
-                ['models/Standing Melee Combo Attack.fbx'],
-                ['models/Standing Melee Attack Horizontal.fbx']],
-  holyCast:['models/Magic Heal.fbx']};
-ASSETS.icons.pala_retri=[['icon/Paladin_retri.png','icon/paladin_retri.png','icon/Paladin_retri.PNG'],null,null];
-ASSETS.icons.pala_holy=[['icon/Paladin_holy.JPG','icon/Paladin_holy.jpg','icon/paladin_holy.jpg','icon/paladin_holy.png'],null,null];
+  model:['./assets/models/paladin_wow.glb','models/paladin_wow.glb'],
+  run:['./assets/models/Running withskin.fbx','models/Running withskin.fbx','./assets/models/Running_withskin.fbx'],
+  idle:['./assets/models/Standing Idle withskin.fbx','models/Standing Idle withskin.fbx','./assets/models/Standing_Idle_withskin.fbx'],
+  weapon:['./assets/models/Schwert_paladin_weapon.glb','models/Schwert_paladin_weapon.glb'],
+  retriAttacks:[['./assets/models/Great Sword High Spin Attack.fbx','models/Great Sword High Spin Attack.fbx'],
+                ['./assets/models/Standing Melee Combo Attack.fbx','models/Standing Melee Combo Attack.fbx'],
+                ['./assets/models/Standing Melee Attack Horizontal.fbx','models/Standing Melee Attack Horizontal.fbx']],
+  holyCast:['./assets/models/Magic Heal.fbx','models/Magic Heal.fbx']};
+ASSETS.icons.pala_retri=[['icon/Paladin_retri.png','icon/paladin_retri.png','icon/Paladin_retri.PNG','./assets/icons/paladin_retri.png'],null,null];
+ASSETS.icons.pala_holy=[['icon/Paladin_holy.JPG','icon/Paladin_holy.jpg','icon/paladin_holy.jpg','icon/paladin_holy.png','./assets/icons/paladin_holy.png'],null,null];
 // Paladin-Texturen (Assets/textures). Leere Liste = Textur aus der GLB verwenden.
-ASSETS.paladin.tex={base:['textures/paladin_base.png'],normal:['textures/paladin_normal.png'],
-  metallic:['textures/paladin_metallic.png'],roughness:['textures/paladin_roughness.png']};
+ASSETS.paladin.tex={base:['textures/paladin_base.png','./assets/textures/paladin_base.png'],normal:['textures/paladin_normal.png','./assets/textures/paladin_normal.png'],
+  metallic:['textures/paladin_metallic.png','./assets/textures/paladin_metallic.png'],roughness:['textures/paladin_roughness.png','./assets/textures/paladin_roughness.png']};
 ASSET_SRC.paladin=async()=>{const A=ASSETS.paladin;
   const [run,idle]=await Promise.all([loadFBXAsset(A.run),loadFBXAsset(A.idle)]);
   const opt=l=>loadFBXAsset(l).catch(e=>{console.warn('Paladin-Animation fehlt',l[0]);return null;});
@@ -12481,7 +12502,7 @@ $('#mbLogin').addEventListener('click',()=>{ac();sfx('click');openLogin('startOv
 const PRIO={first:{ic:'🥇',nm:'Erster'},strong:{ic:'💪',nm:'Stärkster'},weak:{ic:'🩹',nm:'Schwächster'},air:{ic:'🦅',nm:'Flieger'}};
 function prioList(t){return TT[t.type].ground?['first','strong','weak']:['first','strong','weak','air'];}
 /* =================== SPRACHE (Beta) =================== */
-let LANG=store.get('kw-lang','de');const I18N={"Paladin":"Paladin","Paladin Aldric":"Paladin Aldric","Vergeltung":"Retribution","Heilig":"Holy","Gottesschild & Weihe":"Divine Shield & Consecration","Heiliges Licht":"Holy Light","Klasse des Paladins":"Paladin class","🛡️ Gottesschild!":"🛡️ Divine Shield!","☀️ Weihe!":"☀️ Consecration!","Siegesschlag!":"Victory Rush!","Absorbiert":"Absorbed","🛡️ Segen":"🛡️ Blessing","Dunkelelfe":"Dark Elf","Sithrael die Dunkelelfe":"Sithrael the Dark Elf","Shadow Step":"Shadow Step","🌀 Klingensturm!":"🌀 Blade Storm!","Schattengift":"Shadow Poison","Klingenwirbel":"Blade Whirl","Sturmherz":"Storm Heart","Lava King":"Lava King","Magma Slam":"Magma Slam","☄️ Meteorit!":"☄️ Meteor!","Basaltpanzer":"Basalt Armor","Glühende Aura":"Glowing Aura","Vulkanherz":"Volcano Heart","Optionen":"Options","Quests":"Quests","Helden":"Heroes","Türme":"Towers","Shop":"Shop","Upgrades":"Upgrades","Fernkämpfer":"Ranged","Nahkämpfer":"Melee","Aktiv · Spezialangriff":"Active · Special","Max":"Max","Katapult":"Catapult","Schleudert schwere Felsbrocken weit über das Schlachtfeld. Stufe 6: Feuerkugeln setzen den Boden in Brand. Nur Bodenziele.":"Hurls heavy boulders far across the battlefield. Level 6: fireballs set the ground ablaze. Ground targets only.","🪵 Einfache Holzkonstruktion":"🪵 Simple wooden frame","⚙️ Verstärkte Bauweise":"⚙️ Reinforced build","🪢 Mit Seilwinde":"🪢 With rope winch","🛡️ Eisenverstärkung":"🛡️ Iron reinforcement","⛓️ Mit Gegengewicht":"⛓️ With counterweight","👑 Legendäre Konstruktion":"👑 Legendary construction","Belagerung":"Siege","Sturmtrupp":"Assault squad","Trommelfeuer":"Barrage","Halte die Burg gegen die Horden": "Defend the castle against the hordes", "Leicht": "Easy", "Normal": "Normal", "Schwer": "Hard", "Weiterspielen": "Continue", "Spielen": "Play", "Gebiet wählen": "Choose area", "⭐ Heldenlager": "⭐ Hall of Heroes", "⭐ Heldenlager: Talente lernen": "⭐ Hall of Heroes: learn talents", "Glücksrad": "Lucky Wheel", "Erfolge": "Achievements", "Bestiarium": "Bestiary", "Profil": "Profile", "Marktplatz": "Market", "Login-Bonus": "Login Bonus", "Trophäen": "Trophies", "Bauen": "Build", "Zoomen & Drehen": "Zoom & Rotate", "Bewegen": "Move", "Helden": "Heroes", "Bauplatz antippen, Turm wählen, nochmal tippen": "Tap a build spot, pick a tower, tap again", "Zwei Finger aufziehen oder im Kreis drehen": "Pinch with two fingers or twist to rotate", "Mit einem Finger die Karte ziehen": "Drag the map with one finger", "Porträt antippen, dann ein Ziel. Goldener Knopf: Spezialangriff": "Tap the portrait, then a target. Gold button: special attack", "⚙️ Grafik": "⚙️ Graphics", "Hoch": "High", "Niedrig (ältere Handys)": "Low (older phones)", "Niedrig": "Low", "🌐 Sprache": "🌐 Language", "NÄCHSTES ZIEL": "NEXT GOAL", "Pause": "Pause", "☁️ Spielstand speichern": "☁️ Save game", "🔢 Schadenszahlen: An": "🔢 Damage numbers: On", "🔢 Schadenszahlen: Aus": "🔢 Damage numbers: Off", "🎵 Musik: An": "🎵 Music: On", "🎵 Musik: Aus": "🎵 Music: Off", "⏩ Auto-Wellen: An": "⏩ Auto waves: On", "⏩ Auto-Wellen: Aus": "⏩ Auto waves: Off", "🎵 Musik": "🎵 Music", "🔊 Effekte": "🔊 Effects", "Level neu starten": "Restart level", "Zur Gebietsauswahl": "Back to map select", "Sieg!": "Victory!", "Die Burg ist gefallen!": "The castle has fallen!", "Nächstes Gebiet": "Next area", "🔁 Nochmal spielen": "🔁 Play again", "Nochmal spielen": "Play again", "Neuer Versuch": "Try again", "Zurück": "Back", "Drehen!": "Spin!", "Morgen wieder drehen": "Spin again tomorrow", "Einmal am Tag drehen, Sterne oder Bonus-Gold gewinnen": "Spin once a day to win stars or bonus gold", "Tagesaufgabe": "Daily Quest", "Tages­aufgabe": "Daily Quest", "Herausforderung starten": "Start challenge", "Täglicher Bonus": "Daily Bonus", "Abholen": "Claim", "Morgen wieder": "Come back tomorrow", "Trophäen-Kabinett": "Trophy Cabinet", "Dein Profil": "Your Profile", "Kriegsrat": "War Council", "Sternenweg": "Star Path", "Dein Held": "Your Hero", "Dein Gebiet": "Your Area", "Kampagne": "Campaign", "Endlos ∞": "Endless ∞", "Heldenlager": "Hall of Heroes", "Sterne aus Siegen": "Stars from victories", "Talente zurücksetzen": "Reset talents", "Ausrüstung": "Equipment", "Talente": "Talents", "Waffe": "Weapon", "Rüstung": "Armor", "Amulett": "Amulet", "leer · antippen": "empty · tap", "Anlegen": "Equip", "Ablegen": "Unequip", "🧪 Tränke": "🧪 Potions", "🏰 Türme": "🏰 Towers", "🦸 Helden": "🦸 Heroes", "🗡️ Ausrüstung": "🗡️ Gear", "🎁 Truhen": "🎁 Chests", "Schatzgold verdienst du in jeder Schlacht": "You earn treasure gold in every battle", "Sternentruhe": "Star Chest", "Super!": "Great!", "Meteor": "Meteor", "Eis": "Ice", "Steinwall": "Stone Wall", "Schildschlag": "Shield Bash", "Pfeilhagel": "Arrow Rain", "Feuersturm": "Firestorm", "Schattensprung": "Shadow Leap", "Kettenheilung": "Chain Heal", "Sturmschlag": "Storm Strike", "Lavaeruption": "Lava Eruption", "Heiler": "Healer", "Verstärkung": "Enhancement", "Elementar": "Elemental", "Wiederherstellung": "Restoration", "Nahkampf": "Melee", "Fernkampf": "Ranged", "Balthazars Spezialisierung": "Balthazar's specialization", "Willkommen, Kommandant! Tippe auf einen Bauplatz am Weg, um einen Turm zu bauen.": "Welcome, commander! Tap a build spot next to the road to build a tower.", "Dafür fehlt dir noch Gold.": "You need more gold for that.", "Der Zauber lädt noch.": "The spell is still recharging.", "Start": "Start", "Letzte Welle!": "Final wave!", "Bosswelle!": "Boss wave!", "Weiter geht’s!": "Let’s go!", "Balliste": "Ballista", "Kaserne": "Barracks", "Mörser": "Mortar", "Kristallturm": "Crystal Tower", "Kanone": "Cannon", "Plasmaturm": "Plasma Tower", "Verbessern": "Upgrade", "Verkaufen": "Sell", "Höchste Stufe": "Max level", "Erster": "First", "Stärkster": "Strongest", "Schwächster": "Weakest", "Flieger": "Flyers"};const _orig=new WeakMap();
+let LANG=store.get('kw-lang','de');const I18N={"💾 Spielstand sichern / laden":"💾 Backup / restore progress","Spielstand sichern":"Backup progress","Dein Fortschritt als Code – zum Sichern oder für ein anderes Gerät":"Your progress as a code – to back up or move to another device","📤 Exportieren":"📤 Export","📥 Importieren":"📥 Import","📋 Code kopieren":"📋 Copy code","📄 Als Datei speichern":"📄 Save as file","⬆️ Code laden":"⬆️ Load code","📂 Datei wählen":"📂 Choose file","Paladin":"Paladin","Paladin Aldric":"Paladin Aldric","Vergeltung":"Retribution","Heilig":"Holy","Gottesschild & Weihe":"Divine Shield & Consecration","Heiliges Licht":"Holy Light","Klasse des Paladins":"Paladin class","🛡️ Gottesschild!":"🛡️ Divine Shield!","☀️ Weihe!":"☀️ Consecration!","Siegesschlag!":"Victory Rush!","Absorbiert":"Absorbed","🛡️ Segen":"🛡️ Blessing","Dunkelelfe":"Dark Elf","Sithrael die Dunkelelfe":"Sithrael the Dark Elf","Shadow Step":"Shadow Step","🌀 Klingensturm!":"🌀 Blade Storm!","Schattengift":"Shadow Poison","Klingenwirbel":"Blade Whirl","Sturmherz":"Storm Heart","Lava King":"Lava King","Magma Slam":"Magma Slam","☄️ Meteorit!":"☄️ Meteor!","Basaltpanzer":"Basalt Armor","Glühende Aura":"Glowing Aura","Vulkanherz":"Volcano Heart","Optionen":"Options","Quests":"Quests","Helden":"Heroes","Türme":"Towers","Shop":"Shop","Upgrades":"Upgrades","Fernkämpfer":"Ranged","Nahkämpfer":"Melee","Aktiv · Spezialangriff":"Active · Special","Max":"Max","Katapult":"Catapult","Schleudert schwere Felsbrocken weit über das Schlachtfeld. Stufe 6: Feuerkugeln setzen den Boden in Brand. Nur Bodenziele.":"Hurls heavy boulders far across the battlefield. Level 6: fireballs set the ground ablaze. Ground targets only.","🪵 Einfache Holzkonstruktion":"🪵 Simple wooden frame","⚙️ Verstärkte Bauweise":"⚙️ Reinforced build","🪢 Mit Seilwinde":"🪢 With rope winch","🛡️ Eisenverstärkung":"🛡️ Iron reinforcement","⛓️ Mit Gegengewicht":"⛓️ With counterweight","👑 Legendäre Konstruktion":"👑 Legendary construction","Belagerung":"Siege","Sturmtrupp":"Assault squad","Trommelfeuer":"Barrage","Halte die Burg gegen die Horden": "Defend the castle against the hordes", "Leicht": "Easy", "Normal": "Normal", "Schwer": "Hard", "Weiterspielen": "Continue", "Spielen": "Play", "Gebiet wählen": "Choose area", "⭐ Heldenlager": "⭐ Hall of Heroes", "⭐ Heldenlager: Talente lernen": "⭐ Hall of Heroes: learn talents", "Glücksrad": "Lucky Wheel", "Erfolge": "Achievements", "Bestiarium": "Bestiary", "Profil": "Profile", "Marktplatz": "Market", "Login-Bonus": "Login Bonus", "Trophäen": "Trophies", "Bauen": "Build", "Zoomen & Drehen": "Zoom & Rotate", "Bewegen": "Move", "Helden": "Heroes", "Bauplatz antippen, Turm wählen, nochmal tippen": "Tap a build spot, pick a tower, tap again", "Zwei Finger aufziehen oder im Kreis drehen": "Pinch with two fingers or twist to rotate", "Mit einem Finger die Karte ziehen": "Drag the map with one finger", "Porträt antippen, dann ein Ziel. Goldener Knopf: Spezialangriff": "Tap the portrait, then a target. Gold button: special attack", "⚙️ Grafik": "⚙️ Graphics", "Hoch": "High", "Niedrig (ältere Handys)": "Low (older phones)", "Niedrig": "Low", "🌐 Sprache": "🌐 Language", "NÄCHSTES ZIEL": "NEXT GOAL", "Pause": "Pause", "☁️ Spielstand speichern": "☁️ Save game", "🔢 Schadenszahlen: An": "🔢 Damage numbers: On", "🔢 Schadenszahlen: Aus": "🔢 Damage numbers: Off", "🎵 Musik: An": "🎵 Music: On", "🎵 Musik: Aus": "🎵 Music: Off", "⏩ Auto-Wellen: An": "⏩ Auto waves: On", "⏩ Auto-Wellen: Aus": "⏩ Auto waves: Off", "🎵 Musik": "🎵 Music", "🔊 Effekte": "🔊 Effects", "Level neu starten": "Restart level", "Zur Gebietsauswahl": "Back to map select", "Sieg!": "Victory!", "Die Burg ist gefallen!": "The castle has fallen!", "Nächstes Gebiet": "Next area", "🔁 Nochmal spielen": "🔁 Play again", "Nochmal spielen": "Play again", "Neuer Versuch": "Try again", "Zurück": "Back", "Drehen!": "Spin!", "Morgen wieder drehen": "Spin again tomorrow", "Einmal am Tag drehen, Sterne oder Bonus-Gold gewinnen": "Spin once a day to win stars or bonus gold", "Tagesaufgabe": "Daily Quest", "Tages­aufgabe": "Daily Quest", "Herausforderung starten": "Start challenge", "Täglicher Bonus": "Daily Bonus", "Abholen": "Claim", "Morgen wieder": "Come back tomorrow", "Trophäen-Kabinett": "Trophy Cabinet", "Dein Profil": "Your Profile", "Kriegsrat": "War Council", "Sternenweg": "Star Path", "Dein Held": "Your Hero", "Dein Gebiet": "Your Area", "Kampagne": "Campaign", "Endlos ∞": "Endless ∞", "Heldenlager": "Hall of Heroes", "Sterne aus Siegen": "Stars from victories", "Talente zurücksetzen": "Reset talents", "Ausrüstung": "Equipment", "Talente": "Talents", "Waffe": "Weapon", "Rüstung": "Armor", "Amulett": "Amulet", "leer · antippen": "empty · tap", "Anlegen": "Equip", "Ablegen": "Unequip", "🧪 Tränke": "🧪 Potions", "🏰 Türme": "🏰 Towers", "🦸 Helden": "🦸 Heroes", "🗡️ Ausrüstung": "🗡️ Gear", "🎁 Truhen": "🎁 Chests", "Schatzgold verdienst du in jeder Schlacht": "You earn treasure gold in every battle", "Sternentruhe": "Star Chest", "Super!": "Great!", "Meteor": "Meteor", "Eis": "Ice", "Steinwall": "Stone Wall", "Schildschlag": "Shield Bash", "Pfeilhagel": "Arrow Rain", "Feuersturm": "Firestorm", "Schattensprung": "Shadow Leap", "Kettenheilung": "Chain Heal", "Sturmschlag": "Storm Strike", "Lavaeruption": "Lava Eruption", "Heiler": "Healer", "Verstärkung": "Enhancement", "Elementar": "Elemental", "Wiederherstellung": "Restoration", "Nahkampf": "Melee", "Fernkampf": "Ranged", "Balthazars Spezialisierung": "Balthazar's specialization", "Willkommen, Kommandant! Tippe auf einen Bauplatz am Weg, um einen Turm zu bauen.": "Welcome, commander! Tap a build spot next to the road to build a tower.", "Dafür fehlt dir noch Gold.": "You need more gold for that.", "Der Zauber lädt noch.": "The spell is still recharging.", "Start": "Start", "Letzte Welle!": "Final wave!", "Bosswelle!": "Boss wave!", "Weiter geht’s!": "Let’s go!", "Balliste": "Ballista", "Kaserne": "Barracks", "Mörser": "Mortar", "Kristallturm": "Crystal Tower", "Kanone": "Cannon", "Plasmaturm": "Plasma Tower", "Verbessern": "Upgrade", "Verkaufen": "Sell", "Höchste Stufe": "Max level", "Erster": "First", "Stärkster": "Strongest", "Schwächster": "Weakest", "Flieger": "Flyers"};const _orig=new WeakMap();
 const I18P=[[/^Welle (\d+)$/,'Wave $1'],[/^Stufe (\d+)\/(\d+)$/,'Level $1/$2'],[/^Tag (\d+)$/,'Day $1'],[/^(\d+) ⭐ frei$/,'$1 ⭐ free'],[/^Gebiet (\d+) · (\d+) Wellen$/,'Area $1 · $2 waves'],[/^Rekord: (\d+) Wellen$/,'Record: $1 waves'],[/^Lernen (\d+)⭐$/,'Learn $1⭐']];
 function trText(t){const k=t.trim();if(!k)return null;if(I18N[k])return t.replace(k,I18N[k]);for(const [re,r] of I18P)if(re.test(k))return t.replace(k,k.replace(re,r));return null;}
 function i18nNode(n){if(n.nodeType===3){let r=_orig.get(n);if(r&&n.nodeValue!==r.t&&n.nodeValue!==r.o){r=null;_orig.delete(n);}const o=r?r.o:n.nodeValue;
@@ -12625,6 +12646,35 @@ $('#btnSound').addEventListener('click',()=>{AU.muted=!AU.muted;store.set('kw-mu
 addEventListener('pagehide',()=>saveNow(true));
 document.addEventListener('visibilitychange',()=>{if(document.hidden)saveNow();if(document.hidden&&S.playing&&!S.over&&!S.paused){S.paused=true;$('#pauseLv').textContent=CUR.L.name;$('#pauseOv').classList.add('show');}});
 
+
+/* =================== SPIELSTAND EXPORT / IMPORT =================== */
+const BAK_PREFIX='FORTIFY3D-1:';
+function bakKeys(){const r=[];try{for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k&&k.startsWith('kw-'))r.push(k);}}catch(e){}return r.sort();}
+function bakExport(){try{saveNow(true);}catch(e){}const data={};for(const k of bakKeys()){try{data[k]=localStorage.getItem(k);}catch(e){}}
+  const json=JSON.stringify({game:'fortify3d',v:1,t:Date.now(),data});return BAK_PREFIX+btoa(unescape(encodeURIComponent(json)));}
+function bakParse(code){code=String(code||'').replace(/\s+/g,'');if(code.startsWith(BAK_PREFIX))code=code.slice(BAK_PREFIX.length);
+  let o;try{o=JSON.parse(decodeURIComponent(escape(atob(code))));}catch(e){try{o=JSON.parse(code);}catch(e2){return null;}}
+  return o&&o.game==='fortify3d'&&o.data&&typeof o.data==='object'?o:null;}
+function bakInfo(o){let m={},st=0;try{m=JSON.parse(o.data['kw-meta']||'{}')||{};}catch(e){}try{const p=JSON.parse(o.data['kw-prog2']||'{}');st=(p.stars||[]).reduce((a,b)=>a+(b|0),0);}catch(e){}
+  const d=new Date(o.t||0);return `${st} ⭐ · ${(m.heroes||[]).length} gekaufte Helden · gesichert am ${d.toLocaleDateString('de-DE')} ${d.toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'})}`;}
+function bakImport(code){const o=bakParse(code);if(!o){$('#bakTxt').textContent='❌ Der Code ist ungültig oder unvollständig.';sfx('click');return;}
+  if(!confirm('Spielstand laden?\n\n'+bakInfo(o)+'\n\nDein aktueller Spielstand auf diesem Gerät wird dabei ersetzt.'))return;
+  try{for(const k of bakKeys())localStorage.removeItem(k);for(const [k,v] of Object.entries(o.data))if(k.startsWith('kw-')&&typeof v==='string')localStorage.setItem(k,v);}
+  catch(e){$('#bakTxt').textContent='❌ Speichern nicht möglich (privater Modus?).';return;}
+  try{if(typeof cloudWrite==='function')cloudWrite();}catch(e){}
+  $('#bakTxt').textContent='✅ Spielstand geladen – das Spiel startet neu …';setTimeout(()=>location.reload(),900);}
+function openBak(from){$('#bakOut').value=bakExport();$('#bakIn').value='';$('#bakTxt').textContent='';openOv('bakOv',from);sfx('click');}
+function bakCopyTxt(t){if(navigator.clipboard&&window.isSecureContext)return navigator.clipboard.writeText(t);
+  return new Promise((res,rej)=>{const ta=$('#bakOut');ta.removeAttribute('readonly');ta.select();ta.setSelectionRange(0,t.length);const ok=document.execCommand('copy');ta.setAttribute('readonly','');ok?res():rej();});}
+$('#bakBtn1').addEventListener('click',()=>openBak('startOv'));$('#bakBtn2').addEventListener('click',()=>openBak('pauseOv'));
+$('#bakCopy').addEventListener('click',()=>{const t=$('#bakOut').value;bakCopyTxt(t).then(()=>{$('#bakTxt').textContent='✅ Code kopiert – füge ihn z. B. in Notizen ein.';sfx('coin');},
+  ()=>{$('#bakOut').select();$('#bakTxt').textContent='Code markiert – bitte manuell kopieren.';});});
+$('#bakFile').addEventListener('click',async()=>{const t=$('#bakOut').value,d=new Date(),nm=`fortify3d-spielstand-${d.toISOString().slice(0,10)}.txt`;
+  try{const f=new File([t],nm,{type:'text/plain'});if(navigator.canShare&&navigator.canShare({files:[f]})){await navigator.share({files:[f],title:'Fortify 3D Spielstand'});$('#bakTxt').textContent='✅ Datei geteilt.';return;}}catch(e){if(e&&e.name==='AbortError')return;}
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([t],{type:'text/plain'}));a.download=nm;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},1000);$('#bakTxt').textContent='✅ Datei gespeichert.';});
+$('#bakLoad').addEventListener('click',()=>bakImport($('#bakIn').value));
+$('#bakPick').addEventListener('click',()=>$('#bakFileIn').click());
+$('#bakFileIn').addEventListener('change',e=>{const f=e.target.files&&e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{$('#bakIn').value=String(r.result||'').trim();bakImport(r.result);};r.readAsText(f);e.target.value='';});
 
 /* =================== SPEICHERN (lokal + Cloud) =================== */
 const SAVE_KEY='kw-save1';let saveTimer=0;
